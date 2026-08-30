@@ -70,9 +70,11 @@ Live is unreachable it falls back to scoring locally against stat weights,
 handling ring and trinket pairs, unique-equipped, two-handers vs. dual wield
 (including Titan's Grip), and tier set bonuses.
 
-**Equipper** re-resolves each item's location immediately before moving it, so
-ring and trinket shuffles cannot lose an item mid-swap, and refuses to run in
-combat — it queues and finishes when you drop out.
+**Equipper** re-resolves each item's location immediately before moving it,
+rather than trusting the plan's snapshot. Ring and trinket swaps are the reason:
+the item you want in slot 11 may be sitting in slot 12 and about to move, so a
+stale location would put the wrong item somewhere or drop one entirely. It
+refuses to run in combat, queueing until you drop out.
 
 ## Things that had to be got right
 
@@ -115,4 +117,6 @@ by hand with `python -m qeagent --show-browser`. Every failure leaves a
 screenshot, the page HTML and the exact SimC string in `~/.qeagent/debug/`.
 
 Verified end to end on a live client (Preservation Evoker, 12.1.0.69497,
-August 2026). A full run takes about 12 seconds.
+August 2026): capture, decode, the LoadOnDemand hot-read, the QE Live round
+trip, and equipping the result — including a ring and trinket shuffle landing
+in the right slots. A full run takes about 12 seconds.
