@@ -8,6 +8,7 @@ into the game's LoadOnDemand inbox. Nothing in the loop needs a human.
 from __future__ import annotations
 
 import argparse
+import socket
 import sys
 import time
 import traceback
@@ -19,6 +20,24 @@ from .decode import Assembler, DecodeError, NotOurImage, decode_image
 from .qelive import QELive, spec_from_simc
 
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".tga"}
+
+# Holding a loopback port is a lock that cannot be left stale: if the process
+# dies the OS releases it. Two agents would fight over the browser profile and
+# both fail with a stack trace nobody should have to read.
+_LOCK_PORT = 49731
+_lock_socket = None
+
+
+def already_running() -> bool:
+    global _lock_socket
+    _lock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        _lock_socket.bind(("127.0.0.1", _LOCK_PORT))
+        _lock_socket.listen(1)
+        return False
+    except OSError:
+        _lock_socket = None
+        return True
 
 # Slot ids the addon uses, in the order QE Live lists a gear set.
 SET_SLOT_ORDER = [1, 2, 3, 15, 5, 9, 10, 6, 7, 8, 11, 12, 13, 14, 16, 17]
@@ -253,6 +272,11 @@ def main(argv=None) -> int:
     if args.install:
         made = ensure_stubs(addons_dir(wow))
         print(f"inbox stubs ready in {addons_dir(wow)} ({made} written)")
+        return 0
+
+    if already_running():
+        print("QE AutoGear is already running in another window.")
+        print("Use that one, or close it before starting a new one.")
         return 0
 
     profile = Path(args.profile) if args.profile else Path.home() / ".qeagent" / "profile"
