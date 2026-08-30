@@ -36,7 +36,7 @@ yourself, if you want it.
 1. On this page, click the green **Code** button, then **Download ZIP**.
 2. Unzip it somewhere you will not delete by accident — your Documents folder is
    fine. Not your Downloads folder.
-3. Double-click **`Start QE AutoGear.bat`**.
+3. Double-click **`Run QE AutoGear.bat`**.
 
 That is it. The first run takes a few minutes because it downloads what it
 needs. After that it takes a couple of seconds.
@@ -85,7 +85,7 @@ Now looting an upgrade re-runs everything and re-gears you on its own.
 ## If something goes wrong
 
 **"No answer from the QE agent"** — the black window is closed or was never
-opened. Double-click `Start QE AutoGear.bat` again and leave it open.
+opened. Double-click `Run QE AutoGear.bat` again and leave it open.
 
 **`/qeg` does nothing at all** — WoW has not noticed the addon. Close the game
 fully and start it again, then check `QE AutoGear` is ticked in the AddOns list

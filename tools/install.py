@@ -24,6 +24,8 @@ def main() -> int:
     ap.add_argument("--wow", help="path to the _retail_ folder")
     ap.add_argument("--link", action="store_true",
                     help="make a directory junction instead of copying")
+    ap.add_argument("--quiet", action="store_true",
+                    help="skip the developer next-steps footer (used by the launcher)")
     args = ap.parse_args()
 
     try:
@@ -56,11 +58,12 @@ def main() -> int:
     made = ensure_stubs(addons)
     print(f"inbox:    {addons}\\{ADDON_NAME}_P01 .. _P24 ({made} written)")
     print(f"shots:    {wow / 'Screenshots'}")
-    print()
-    print("Next:")
-    print("  cd agent && pip install -r requirements.txt && playwright install chromium")
-    print("  python -m qeagent")
-    print("Then in game: /qeg run")
+    if not args.quiet:
+        print()
+        print("Next:")
+        print("  cd agent && pip install -r requirements.txt && playwright install chromium")
+        print("  python -m qeagent")
+        print("Then in game: /qeg run")
     return 0
 
 

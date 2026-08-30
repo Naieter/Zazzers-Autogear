@@ -53,7 +53,7 @@ if errorlevel 1 (
 
 rem ---- 3. Install the addon into WoW ----------------------------------
 echo   [3/4] Installing the addon into World of Warcraft...
-%PY% tools\install.py
+%PY% tools\install.py --quiet
 if errorlevel 1 (
     echo.
     echo   Could not find your World of Warcraft folder.
