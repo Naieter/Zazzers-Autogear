@@ -72,6 +72,14 @@ function Core:StartJob()
     job = { id = id, started = GetTime(), timers = {}, meta = meta }
     QEAutoGearDB.lastExport = text
 
+    local seen = QEAutoGearDB.agentSeen
+    if not seen or (time() - seen) > 900 then
+        -- Say so now rather than after a 83 second timeout.
+        ns.Print("|cffff8800the agent has not been heard from.|r Start it in the "
+                 .. "agent folder with |cffffff00python -m qeagent|r, or this "
+                 .. "run will time out.")
+    end
+
     ns.Print("sending %d items to QE Live (%s)...", (meta.bagItems or 0) + 16, meta.specName or "?")
 
     ns.Bridge:Send(text, id, function(frames)
@@ -90,7 +98,11 @@ end
 
 -- A payload stub just loaded and handed us its contents.
 function Core:OnResult(data)
-    if data.daemon then
+    -- Only count this as a live sighting if the payload is recent. The stubs
+    -- keep their last contents on disk forever, so a stale one from a previous
+    -- session would otherwise look like a running agent. time() is real epoch
+    -- time in game and the agent stamps ts the same way, so they compare.
+    if data.daemon and data.ts and math.abs(time() - data.ts) < 300 then
         QEAutoGearDB.agentVersion = data.daemon
         QEAutoGearDB.agentSeen = time()
     end
