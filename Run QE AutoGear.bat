@@ -29,6 +29,14 @@ if not defined PY (
 echo   [1/4] Python found.
 
 rem ---- 2. Dependencies ------------------------------------------------
+rem A marker written after the first successful setup. Without it every
+rem launch - including every Windows login once auto-start is on - would
+rem re-check pip and Playwright, taking tens of seconds instead of two.
+if exist "agent\.deps-ok" (
+    echo   [2/4] Helper libraries already installed.
+    goto deps_done
+)
+
 echo   [2/4] Checking helper libraries ^(first run takes a few minutes^)...
 %PY% -m pip install --quiet --disable-pip-version-check -r agent\requirements.txt
 if errorlevel 1 (
@@ -50,6 +58,9 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+
+echo deps ok> "agent\.deps-ok"
+:deps_done
 
 rem ---- 3. Install the addon into WoW ----------------------------------
 echo   [3/4] Installing the addon into World of Warcraft...

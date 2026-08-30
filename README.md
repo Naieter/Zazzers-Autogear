@@ -69,6 +69,15 @@ A run takes about 12 seconds. You will see the screen flicker once or twice —
 that is the addon taking a picture of itself, which is genuinely how it gets
 your gear out of the game. Nothing is wrong.
 
+### Starting it for you
+
+Double-click **`Auto-start on or off.bat`** and pick **1**. The helper will
+start by itself, minimised, whenever you log in to Windows — so the only thing
+you ever do is play. Pick **2** in the same file to turn it back off.
+
+It puts an ordinary shortcut in your Startup folder. Nothing hidden, no admin
+rights, and you can delete it by hand if you would rather.
+
 ### Letting it do everything
 
 If you want it to gear you up without being asked:
@@ -84,8 +93,9 @@ Now looting an upgrade re-runs everything and re-gears you on its own.
 
 ## If something goes wrong
 
-**"No answer from the QE agent"** — the black window is closed or was never
-opened. Double-click `Run QE AutoGear.bat` again and leave it open.
+**"No answer from the QE agent"** — the helper is not running. Double-click
+`Run QE AutoGear.bat` and leave the window open. To stop this happening again,
+turn on auto-start (above).
 
 **`/qeg` does nothing at all** — WoW has not noticed the addon. Close the game
 fully and start it again, then check `QE AutoGear` is ticked in the AddOns list
