@@ -1,0 +1,19 @@
+## Interface: 120100, 120007, 120000
+## Title: QE AutoGear
+## Notes: Ships your gear to Questionably Epic Live and equips the winning set. Fully automatic.
+## Author: Nathan
+## Version: 1.0.0
+## SavedVariables: QEAutoGearDB
+## SavedVariablesPerCharacter: QEAutoGearCharDB
+## IconTexture: Interface\Icons\INV_Chest_Cloth_17
+## X-Category: Inventory
+
+Util.lua
+Weights.lua
+Scanner.lua
+Export.lua
+Optimizer.lua
+Equipper.lua
+Bridge.lua
+UI.lua
+Core.lua
