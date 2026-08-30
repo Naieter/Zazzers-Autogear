@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # selftest needs numpy/pillow only. Playwright and a browser are not
+      # installed: the QE Live leg drives a live third-party site, so it is
+      # deliberately not part of CI.
+      - name: Install
+        run: python -m pip install --upgrade pip numpy pillow lupa
+
+      # WoW runs Lua 5.1, where 5.3 bitwise operators are a syntax error.
+      - name: Lua 5.1 syntax check
+        run: python tools/luacheck.py
+
+      # Round-trips the screenshot protocol: multi-frame, 4K, a 75% downscale,
+      # JPEG rejection, and ignoring unrelated screenshots.
+      - name: Pixel bridge round trip
+        run: python tools/selftest.py
+
+      - name: Python syntax
+        run: python -m compileall -q agent/qeagent tools

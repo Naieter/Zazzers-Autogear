@@ -1,5 +1,7 @@
 # QE AutoGear
 
+[![CI](https://github.com/Naieter/Zazzers-Autogear/actions/workflows/ci.yml/badge.svg)](https://github.com/Naieter/Zazzers-Autogear/actions/workflows/ci.yml)
+
 Scans your gear, race and spec in game, runs it through **Questionably Epic Live**,
 and equips the winning set out of your bags. No copying, no pasting, no `/reload`.
 
@@ -164,3 +166,21 @@ Things that had to be got right, recorded so they are not undone by accident:
 **The scraper reads a site that can change.** If it breaks, run
 `python -m qeagent --show-browser` to watch, and check `~/.qeagent/debug/` —
 every failure leaves a screenshot, the page HTML, and the exact SimC string.
+
+---
+
+## Development
+
+`tools/luacheck.py` compiles every addon file under a real Lua 5.1 runtime —
+the dialect WoW actually uses, where `&`, `>>` and `//` are syntax errors. It
+proves itself first by checking the runtime rejects those, so a pass means
+something. `tools/selftest.py` round-trips the screenshot protocol without WoW.
+CI runs both on every push.
+
+The QE Live leg is deliberately not in CI: it drives a live third-party site,
+so a red build would mean "the site changed", not "this commit is broken".
+Check it by hand with `python -m qeagent --show-browser`.
+
+## Licence
+
+MIT.
