@@ -62,6 +62,18 @@ function Core:StartJob()
         return self:RunLocal(true)
     end
 
+    if not ns.Bridge:CompanionInstalled() then
+        -- Addon-only install. Sending frames nothing will ever read would just
+        -- time out after 83 seconds and look broken, so offer the manual route.
+        ns.Print("|cffff8800the companion helper is not installed|r, so gear cannot be "
+                 .. "sent to QE Live automatically.")
+        ns.Print("Use |cffffff00/qeg export|r to copy your gear, paste it into QE Live, "
+                 .. "then |cffffff00/qeg weights|r to paste the numbers back.")
+        ns.Print("Full automation: |cffffff00github.com/Naieter/Zazzers-Autogear|r")
+        ns.Print("Meanwhile, here is the best set using your stored stat weights:")
+        return self:RunLocal(false)
+    end
+
     local text, meta = ns.Export:Build(QEAutoGearDB.includeBank)
     if not text then
         ns.Print("|cffff4444export failed:|r %s", meta or "unknown")

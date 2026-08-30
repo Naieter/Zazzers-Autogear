@@ -3,3 +3,4 @@ __pycache__/
 tools/_selftest/
 .qeagent/
 agent/.deps-ok
+dist/

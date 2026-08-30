@@ -31,6 +31,19 @@ yourself, if you want it.
 
 ---
 
+## Two ways to run it
+
+**Just the addon** — install from CurseForge like any other addon. You copy your
+gear into QE Live yourself and paste the numbers back (`/qeg export`, then
+`/qeg weights`, then `/qeg local`). Nothing else to install.
+
+**Addon plus helper** — the instructions below. `/qeg run` does the whole thing
+by itself in about twelve seconds, and can re-gear you automatically when you
+loot an upgrade. This needs the small helper program, which cannot be shipped
+through CurseForge because it is not an addon.
+
+---
+
 ## Install
 
 1. On this page, click the green **Code** button, then **Download ZIP**.

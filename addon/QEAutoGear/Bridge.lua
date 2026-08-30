@@ -202,6 +202,16 @@ local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 
 function B:SlotName(i) return ("QEAutoGear_P%02d"):format(i) end
 
+-- The inbox stubs are created by the companion's installer, not shipped with
+-- the addon. Their absence is how we know this is an addon-only install, which
+-- is what everyone who installs from CurseForge has.
+function B:CompanionInstalled()
+    local getInfo = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
+    if not getInfo then return true end
+    local ok, name = pcall(getInfo, self:SlotName(1))
+    return ok and name ~= nil
+end
+
 function B:SlotsRemaining()
     local db = QEAutoGearDB
     return ns.PAYLOAD_SLOTS - (db.nextSlot or 1) + 1
