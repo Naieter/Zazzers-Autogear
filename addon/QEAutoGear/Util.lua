@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 
-ns.VERSION      = "1.0.0"
+ns.VERSION      = "1.0.1"
 ns.PROTOCOL     = 1
 ns.PAYLOAD_SLOTS = 24
 
@@ -9,6 +9,13 @@ local PREFIX = "|cff33ff99QE AutoGear|r: "
 function ns.Print(fmt, ...)
     local msg = select("#", ...) > 0 and fmt:format(...) or fmt
     DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. msg)
+end
+
+-- Indented and unprefixed: a full re-gear prints one line per piece, and
+-- repeating the addon name down the side of all of them is just noise.
+function ns.Detail(fmt, ...)
+    local msg = select("#", ...) > 0 and fmt:format(...) or fmt
+    DEFAULT_CHAT_FRAME:AddMessage("    " .. msg)
 end
 
 function ns.Debug(fmt, ...)

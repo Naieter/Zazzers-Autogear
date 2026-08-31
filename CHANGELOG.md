@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Swapping gear now prints a line per piece saying what came off and what went
+  on, with both items linked so you can hover or click them.
+
 ## 1.0.0
 
 First release.

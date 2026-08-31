@@ -72,6 +72,10 @@ local function step()
         return C_Timer.After(0.05, step)
     end
 
+    -- Read what is coming off now rather than trusting the plan's snapshot:
+    -- an earlier swap in this same queue may already have moved it.
+    local previous = GetInventoryItemLink("player", task.slot)
+
     ClearCursor()
     if where.equipped then
         PickupInventoryItem(where.equipped)
@@ -82,6 +86,15 @@ local function step()
     if GetCursorInfo() then
         EquipCursorItem(task.slot)
         swapped = swapped + 1
+
+        local slotName = ns.SLOT_NAME[task.slot] or ("Slot " .. task.slot)
+        if previous then
+            ns.Detail("|cffaaaaaa%s:|r %s  |cff888888->|r  %s",
+                      slotName, previous, task.link)
+        else
+            ns.Detail("|cffaaaaaa%s:|r %s  |cff888888(was empty)|r",
+                      slotName, task.link)
+        end
     else
         skipped = skipped + 1
     end
