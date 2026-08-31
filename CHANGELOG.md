@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2
+
+- Fixed a swap being reported as done when it had not happened. The addon now
+  checks the slot really holds the new item before saying so, and tells you
+  what went wrong when it does not.
+- Bind-on-equip items work. The confirmation dialog was being cancelled the
+  instant it appeared, so the item never equipped; it now waits for you to
+  answer it.
+
 ## 1.0.1
 
 - Swapping gear now prints a line per piece saying what came off and what went

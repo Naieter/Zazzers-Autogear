@@ -30,5 +30,10 @@ jobs:
       - name: Pixel bridge round trip
         run: python tools/selftest.py
 
+      # The equipper is the only code that changes your character, and its
+      # worst failure is silent: reporting a swap that did not happen.
+      - name: Equipper behaviour
+        run: python tools/test_equipper.py
+
       - name: Python syntax
         run: python -m compileall -q agent/qeagent tools

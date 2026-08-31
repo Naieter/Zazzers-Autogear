@@ -49,7 +49,64 @@ local function finish()
     if ns.UI then ns.UI:Refresh() end
 end
 
-local function step()
+-- Equipping a bind-on-equip item raises a confirmation dialog. That is the
+-- player's decision to make - it destroys the item's trade and sell value - so
+-- the queue waits rather than answering it.
+local BIND_POPUPS = {
+    "EQUIP_BIND", "EQUIP_BIND_TRADEABLE", "EQUIP_BIND_REFUNDABLE",
+    "EQUIP_BIND_TRADEABLE_REFUNDABLE", "END_BOUND_TRADEABLE", "END_REFUND",
+}
+
+local function bindPopupVisible()
+    if not StaticPopup_Visible then return nil end
+    for _, which in ipairs(BIND_POPUPS) do
+        if StaticPopup_Visible(which) then return which end
+    end
+    return nil
+end
+
+local step
+
+-- Equipping is not instant, and it can silently fail: the wrong armour class,
+-- a level requirement, a full bag with nowhere for the displaced item. Confirm
+-- the slot actually holds what we asked for before claiming it swapped.
+local function verify(task, previous, waited, warned)
+    local now = GetInventoryItemLink("player", task.slot)
+    local slotName = ns.SLOT_NAME[task.slot] or ("Slot " .. task.slot)
+
+    if now == task.link then
+        if GetCursorInfo() then ClearCursor() end
+        swapped = swapped + 1
+        if previous then
+            ns.Detail("|cffaaaaaa%s:|r %s  |cff888888->|r  %s", slotName, previous, task.link)
+        else
+            ns.Detail("|cffaaaaaa%s:|r %s  |cff888888(was empty)|r", slotName, task.link)
+        end
+        settled[task.slot] = true
+        return C_Timer.After(0.10, step)
+    end
+
+    if bindPopupVisible() then
+        if not warned then
+            ns.Print("|cffff8800%s binds when equipped|r - confirm the dialog and it "
+                     .. "will carry on.", task.link)
+        end
+        if waited < 120 then
+            return C_Timer.After(0.5, function() verify(task, previous, waited + 1, true) end)
+        end
+    elseif waited < 10 then
+        return C_Timer.After(0.25, function() verify(task, previous, waited + 1, warned) end)
+    end
+
+    if GetCursorInfo() then ClearCursor() end
+    skipped = skipped + 1
+    ns.Print("|cffff4444could not equip|r %s into %s%s.", task.link, slotName,
+             now and (" - still wearing " .. now) or "")
+    settled[task.slot] = true
+    C_Timer.After(0.10, step)
+end
+
+function step()
     if #queue == 0 then return finish() end
 
     if InCombatLockdown() then
@@ -83,25 +140,18 @@ local function step()
         PickupContainerItem(where.bag, where.slot)
     end
 
-    if GetCursorInfo() then
-        EquipCursorItem(task.slot)
-        swapped = swapped + 1
-
-        local slotName = ns.SLOT_NAME[task.slot] or ("Slot " .. task.slot)
-        if previous then
-            ns.Detail("|cffaaaaaa%s:|r %s  |cff888888->|r  %s",
-                      slotName, previous, task.link)
-        else
-            ns.Detail("|cffaaaaaa%s:|r %s  |cff888888(was empty)|r",
-                      slotName, task.link)
-        end
-    else
+    if not GetCursorInfo() then
         skipped = skipped + 1
+        ns.Print("|cffff4444could not pick up|r %s.", task.link)
+        settled[task.slot] = true
+        return C_Timer.After(0.10, step)
     end
-    ClearCursor()
-    settled[task.slot] = true
 
-    C_Timer.After(0.30, step)
+    EquipCursorItem(task.slot)
+    -- Deliberately no ClearCursor() here. A bind-on-equip item leaves a
+    -- confirmation dialog with the item still on the cursor; clearing it
+    -- cancels the equip. verify() tidies up once the outcome is known.
+    verify(task, previous, 0, false)
 end
 
 function Eq:Apply(result, includeBank)
