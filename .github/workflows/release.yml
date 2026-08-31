@@ -38,6 +38,9 @@ jobs:
       - name: Equipper behaviour
         run: python tools/test_equipper.py
 
+      - name: SimulationCraft output parsing
+        run: python tools/test_simc.py
+
       - name: Build addon zip
         run: python tools/package.py
 

@@ -17,7 +17,8 @@ from pathlib import Path
 from . import __version__
 from .bridge import addons_dir, ensure_stubs, find_wow, publish, screenshots_dir
 from .decode import Assembler, DecodeError, NotOurImage, decode_image
-from .qelive import QELive, spec_from_simc
+from .qelive import SPEC_KEYWORDS, QELive, spec_from_simc
+from .simc import SimC, find_exe
 
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".tga"}
 
@@ -86,7 +87,8 @@ def _as_set(items: list[dict]) -> list[dict]:
 
 class Agent:
     def __init__(self, wow: Path, headless: bool = True, keep_shots: bool = False,
-                 profile: Path | None = None, timeout: int = 120):
+                 profile: Path | None = None, timeout: int = 120,
+                 simc_path: str | None = None):
         self.wow = wow
         self.addons = addons_dir(wow)
         self.shots = screenshots_dir(wow)
@@ -95,6 +97,9 @@ class Agent:
         self.seen: set[Path] = set()
         self.result_until = 0.0
         self.qe = QELive(headless=headless, profile_dir=profile, timeout=timeout)
+        # Healers sim on QE Live in a browser; everyone else runs the same
+        # engine Raidbots runs, locally, so nobody else pays for the compute.
+        self.simc = SimC(find_exe(simc_path))
 
     # -- inbox ------------------------------------------------------------
 
@@ -151,9 +156,13 @@ class Agent:
 
         spec = spec_from_simc(simc)
         lines = len([x for x in simc.splitlines() if x.strip()])
-        log(f"job {job}: {len(simc)} bytes, {lines} lines, spec={spec}")
+        engine = "QE Live" if spec in SPEC_KEYWORDS else "SimulationCraft"
+        log(f"job {job}: {len(simc)} bytes, {lines} lines, spec={spec} -> {engine}")
 
         self.say(job, "pending")
+
+        if engine == "SimulationCraft":
+            return self.handle_simc(simc, job)
 
         started = time.time()
         result = self.qe.run(simc, spec_id=spec)
@@ -180,10 +189,38 @@ class Agent:
         log(f"job {job}: {len(gear)} items in {elapsed:.1f}s"
             + (f", {len(weights)} weights" if weights else ""))
 
-        payload = {"set": gear, "note": result.note[:120]}
+        payload = {"set": gear, "note": result.note[:120], "source": "QE Live"}
         if weights:
             payload["weights"] = weights
         self.say(job, "ok", **payload)
+
+    def handle_simc(self, simc: str, job: int) -> None:
+        """Non-healer specs: run SimulationCraft here and send back weights.
+
+        Weights rather than a finished set, because comparing every combination
+        in your bags would take hours while scale factors take one run - and the
+        addon already knows how to pick the best set given weights.
+        """
+        if not self.simc.available():
+            log(f"job {job}: SimulationCraft not installed")
+            self.say(job, "error",
+                     err="SimulationCraft is not installed. Get the Windows build "
+                         "from simulationcraft.org and unzip it, then restart the helper.")
+            return
+
+        log(f"job {job}: running simc (this takes a minute or two)...")
+        result = self.simc.scale_factors(simc)
+
+        if not result.ok:
+            log(f"job {job}: simc FAILED - {result.error}")
+            self.say(job, "error", err=result.error[:200])
+            return
+
+        log(f"job {job}: {len(result.weights)} stat weights in {result.seconds:.0f}s"
+            + (f", {result.dps:,.0f} dps" if result.dps else ""))
+        log(f"          {result.weights}")
+        self.say(job, "ok", weights=result.weights, source="SimulationCraft",
+                 note=f"simc, {result.seconds:.0f}s")
 
     def tick(self) -> None:
         for path in self._new_images():
@@ -223,6 +260,8 @@ class Agent:
         log(f"WoW:         {self.wow}")
         log(f"screenshots: {self.shots}")
         log(f"inbox:       {self.addons} ({made} stub(s) refreshed)")
+        exe = self.simc.exe
+        log(f"simc:        {exe if exe else 'not found - DPS specs will say so'}")
         log("starting browser...")
         self.qe.start()
         self.announce_idle(force=True)
@@ -251,6 +290,7 @@ def main(argv=None) -> int:
                     help="do not delete the data-grid screenshots after decoding")
     ap.add_argument("--profile", help="persistent browser profile directory")
     ap.add_argument("--timeout", type=int, default=120, help="per-run timeout in seconds")
+    ap.add_argument("--simc", help="path to simc.exe, if it is not on PATH or in the usual places")
     ap.add_argument("--install", action="store_true",
                     help="create the inbox stub addons and exit")
     ap.add_argument("--decode", help="decode a single screenshot and print it, then exit")
@@ -283,5 +323,5 @@ def main(argv=None) -> int:
     profile.mkdir(parents=True, exist_ok=True)
 
     Agent(wow, headless=not args.show_browser, keep_shots=args.keep_screenshots,
-          profile=profile, timeout=args.timeout).run()
+          profile=profile, timeout=args.timeout, simc_path=args.simc).run()
     return 0

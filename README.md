@@ -14,14 +14,19 @@ copy, paste, or open a browser.
 
 ## Before you start
 
-**This only works for healers.** Questionably Epic Live only models these seven
-specs, and there is nothing the addon can do about that:
+**Healers and everyone else take different routes.** Healers sim on
+[Questionably Epic Live](https://questionablyepic.com/live), which the helper
+drives for you with nothing to install. Every other spec sims on
+**SimulationCraft**, which you install once (below) and which then runs on your
+own machine — same engine Raidbots runs, no queue, no limits, works offline.
 
-Holy Paladin · Restoration Druid · Discipline Priest · Holy Priest ·
-Restoration Shaman · Mistweaver Monk · Preservation Evoker
+Either way `/qeg run` is the whole thing.
 
-On any other spec it will tell you so and fall back to a simpler built-in
-calculation.
+**For damage and tank specs, install SimulationCraft.** Get the Windows build
+from [simulationcraft.org](https://www.simulationcraft.org/) and unzip it
+anywhere sensible — `C:\SimulationCraft` is found automatically, or pass
+`--simc "path	o\simc.exe"` to the helper. Without it, those specs are told to
+install it rather than left waiting.
 
 **Windows only, for now.** The one-click installer is a Windows batch file.
 

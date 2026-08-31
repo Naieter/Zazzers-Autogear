@@ -35,5 +35,8 @@ jobs:
       - name: Equipper behaviour
         run: python tools/test_equipper.py
 
+      - name: SimulationCraft output parsing
+        run: python tools/test_simc.py
+
       - name: Python syntax
         run: python -m compileall -q agent/qeagent tools

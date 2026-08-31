@@ -57,18 +57,15 @@ function Core:StartJob()
 
     local specIndex = GetSpecialization()
     local specID = specIndex and GetSpecializationInfo(specIndex)
-    if specID and not ns.QE_SPECS[specID] then
-        ns.Print("|cffff8800QE Live only models healers|r - falling back to local optimisation.")
-        return self:RunLocal(true)
-    end
-
     if not ns.Bridge:CompanionInstalled() then
         -- Addon-only install. Sending frames nothing will ever read would just
         -- time out after 83 seconds and look broken, so offer the manual route.
-        ns.Print("|cffff8800the companion helper is not installed|r, so gear cannot be "
-                 .. "sent to QE Live automatically.")
-        ns.Print("Use |cffffff00/qeg export|r to copy your gear, paste it into QE Live, "
-                 .. "then |cffffff00/qeg weights|r to paste the numbers back.")
+        local site = ns.SimSite(specID or 0)
+        ns.Print("|cffff8800the companion helper is not installed|r, so nothing can be "
+                 .. "sent to %s automatically.", site)
+        ns.Print("Use |cffffff00/qeg export|r to copy your gear, run it through "
+                 .. "%s, then |cffffff00/qeg weights|r to paste the numbers back.",
+                 site)
         ns.Print("Full automation: |cffffff00github.com/Naieter/Zazzers-Autogear|r")
         ns.Print("Meanwhile, here is the best set using your stored stat weights:")
         return self:RunLocal(false)
@@ -143,7 +140,7 @@ function Core:OnResult(data)
     cancelJob(nil)
 
     if data.weights and specID then
-        ns.Weights:Set(specID, data.weights, "QE Live")
+        ns.Weights:Set(specID, data.weights, data.source or "QE Live")
         ns.Debug("stored QE Live weights for spec %d", specID)
     end
 
@@ -158,7 +155,7 @@ function Core:OnResult(data)
         end
     else
         result = ns.Optimizer:Run({ includeBank = QEAutoGearDB.includeBank, tierBonus = 0 })
-        if result then result.source = "QE Live stat weights" end
+        if result then result.source = (data.source or "QE Live") .. " stat weights" end
     end
 
     if not result then
@@ -359,7 +356,9 @@ SlashCmdList.QEAUTOGEAR = function(msg)
         ns.Print("screenshot dir: <WoW>\\Screenshots - agent must be watching it")
         local spec = GetSpecialization()
         local id = spec and GetSpecializationInfo(spec)
-        ns.Print("spec %s: %s", tostring(id), ns.QE_SPECS[id] or "|cffff8800not modelled by QE Live|r")
+        local site = ns.SimSite(id)
+        ns.Print("spec %s: sims on %s%s", tostring(id), site,
+                 ns.QE_SPECS[id] and " (automatic)" or " (export and paste)")
 
     else
         ns.Print("commands:")

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.5
+
+- **Damage and tank specs now work.** They sim through SimulationCraft on your
+  own machine instead of QE Live, which only models healers. Install simc once
+  from simulationcraft.org and `/qeg run` behaves exactly the same.
+- Not Raidbots, deliberately: their sims run on hardware they pay for, and
+  their robots.txt asks automation to stay off their API. SimulationCraft is
+  the same engine and runs locally.
+
 ## 1.0.4
 
 - Releases now include the whole package, not just the addon. The download on

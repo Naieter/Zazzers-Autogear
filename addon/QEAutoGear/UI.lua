@@ -4,6 +4,14 @@ ns.UI = UI
 
 local panel, rows, statusText
 
+-- Which site this character's spec actually sims on, for every bit of wording
+-- that used to assume QE Live.
+local function siteName()
+    local idx = GetSpecialization()
+    local id = idx and GetSpecializationInfo(idx)
+    return (ns.SimSite(id or 0))
+end
+
 local function makeButton(parent, label, width, onClick)
     local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     b:SetSize(width, 22)
@@ -76,7 +84,7 @@ function UI:ShowText(title, text)
     f.TitleText:SetText(title)
     f.edit:SetText(text)
     f.edit:SetCursorPosition(0)
-    f.hint:SetText("Ctrl+C to copy. This is the string QE Live's IMPORT GEAR box wants.")
+    f.hint:SetText(("Ctrl+C to copy, then paste it into %s."):format(siteName()))
     f.action:SetText("Close")
     f.action:SetScript("OnClick", function() f:Hide() end)
     f:Show()
@@ -88,7 +96,7 @@ end
 
 function UI:ShowWeightsImport()
     local f = buildTextFrame()
-    f.TitleText:SetText("Paste stat weights from QE Live")
+    f.TitleText:SetText(("Paste stat weights from %s"):format(siteName()))
     f.edit:SetText("")
     f.hint:SetText("Anything containing stat names and numbers works, e.g. Intellect 1.0  Crit 0.42 ...")
     f.action:SetText("Import")
@@ -153,7 +161,9 @@ local function build()
 
     local export = makeButton(panel, "Copy SimC string", 150, function()
         local text = ns.Export:Build(QEAutoGearDB.includeBank)
-        if text then UI:ShowText("SimC export - paste into QE Live", text) end
+        if text then
+            UI:ShowText(("SimC export - paste into %s"):format(siteName()), text)
+        end
     end)
     export:SetPoint("TOPLEFT", run, "BOTTOMLEFT", 0, -6)
 
@@ -225,7 +235,8 @@ function UI:Refresh()
         :format(specName or "?", source or "?")
 
     if specID and not ns.QE_SPECS[specID] then
-        lines[#lines + 1] = "|cffff8800QE Live models healers only - this spec uses local weights.|r"
+        lines[#lines + 1] = ("|cffff8800Sims on %s.|r Export, run it there, paste the "
+                             .. "weights back."):format((ns.SimSite(specID)))
     end
 
     local seen = db.agentSeen
@@ -238,8 +249,8 @@ function UI:Refresh()
 
     local job = ns.Core:JobInfo()
     if job then
-        lines[#lines + 1] = ("|cffffff00Waiting on QE Live...|r (%ds)")
-            :format(math.floor(GetTime() - job.started))
+        lines[#lines + 1] = ("|cffffff00Waiting on %s...|r (%ds)")
+            :format(siteName(), math.floor(GetTime() - job.started))
     elseif ns.lastResult then
         local r = ns.lastResult
         lines[#lines + 1] = ("Last result: |cffffffff%s|r, %d change(s)")

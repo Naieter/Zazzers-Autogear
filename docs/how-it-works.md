@@ -14,7 +14,8 @@ The loop is closed through two channels that need neither.
 | Leg | Channel | Mechanism |
 |---|---|---|
 | Game → PC | **screenshot** | The addon paints the payload as a grid of flat-coloured squares in the corner of the screen and calls `Screenshot()`. With `screenshotFormat=png` the file on disk is lossless. |
-| PC → internet | **Playwright** | A real Chromium session drives questionablyepic.com/live: import the SimC string, press GO!, read the winning set off the page. |
+| PC → maths (healers) | **Playwright** | A real Chromium session drives questionablyepic.com/live: import the SimC string, press GO!, read the winning set off the page. |
+| PC → maths (everyone else) | **local SimulationCraft** | `simc calculate_scale_factors=1` on your own machine, and the stat weights come back. |
 | PC → Game | **LoadOnDemand addon** | The agent rewrites `Payload.lua` inside a LoD stub. WoW reads a LoD addon's Lua from disk *at `LoadAddOn()` time*, so fresh data arrives mid-session. |
 
 ## The pixel protocol
@@ -120,3 +121,29 @@ Verified end to end on a live client (Preservation Evoker, 12.1.0.69497,
 August 2026): capture, decode, the LoadOnDemand hot-read, the QE Live round
 trip, and equipping the result — including a ring and trinket shuffle landing
 in the right slots. A full run takes about 12 seconds.
+
+## Why DPS does not use Raidbots
+
+Raidbots is the obvious place to sim a damage spec, and the addon deliberately
+does not submit to it. Two reasons, in order of weight:
+
+1. **It is their compute.** QE Live is JavaScript running in your own browser,
+   so automating it costs the site bandwidth and nothing else. Raidbots runs
+   SimulationCraft on hardware they pay for. With `autorun` on, this addon would
+   fire a fresh sim every time you looted an upgrade.
+2. **They asked.** `raidbots.com/robots.txt` disallows `/api/` for every user
+   agent, with a note that automated traffic there has caused problems.
+
+SimulationCraft is the same engine, open source, and runs locally. Nobody else
+pays for it and there is no queue. The only cost is that the player installs it
+once.
+
+The agent asks simc for **scale factors** rather than a gear comparison.
+Comparing every combination of what is in your bags would take hours; scale
+factors take one run, and the addon already knows how to pick the best set from
+a set of weights -- that path existed for the offline fallback and is reused
+here.
+
+simc's `json2` output has changed shape between versions, so the parser hunts
+for the `scale_factors` key rather than indexing a fixed path, and matches stat
+names after lowercasing and dropping a trailing `_rating`.

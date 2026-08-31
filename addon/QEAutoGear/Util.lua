@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 
-ns.VERSION      = "1.0.4"
+ns.VERSION      = "1.0.5"
 ns.PROTOCOL     = 1
 ns.PAYLOAD_SLOTS = 24
 
@@ -130,6 +130,14 @@ ns.EQUIPLOC_SLOTS = {
     INVTYPE_WEAPONOFFHAND = { 17 }, INVTYPE_SHIELD = { 17 }, INVTYPE_HOLDABLE = { 17 },
 }
 
+-- Which site does the maths for a given spec. QE Live models healers; every
+-- other spec is a Raidbots job. The two are automated very differently: QE
+-- Live is JavaScript in your own browser, while Raidbots runs SimulationCraft
+-- on hardware they pay for, so the addon never submits a sim there by itself.
+function ns.SimSite(specID)
+    if ns.QE_SPECS[specID] then return "QE Live", "https://questionablyepic.com/live" end
+    return "Raidbots", "https://www.raidbots.com/simbot/topgear"
+end
 -- QE Live only models healers. Everything else falls back to local weights.
 ns.QE_SPECS = {
     [65]   = "Holy Paladin",
