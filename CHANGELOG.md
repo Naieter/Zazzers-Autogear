@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4
+
+- Releases now include the whole package, not just the addon. The download on
+  the Releases page had no launcher and no helper in it, so `/qeg run` could
+  not work for anyone who got it there.
+
 ## 1.0.3
 
 - Gear is now equipped automatically when you run it, instead of showing a list

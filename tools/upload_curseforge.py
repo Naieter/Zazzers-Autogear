@@ -98,10 +98,11 @@ def main() -> int:
     version = toc_value("Version")
     interfaces = [x.strip() for x in toc_value("Interface").split(",")]
 
-    zips = sorted((ROOT / "dist").glob("QEAutoGear-*.zip"))
-    if not zips:
-        raise SystemExit("no zip in dist/ - run tools/package.py first")
-    zip_path = zips[-1]
+    # Named exactly rather than globbed: dist/ also holds the Full zip, which
+    # sorts last and is not an addon. CurseForge would reject it.
+    zip_path = ROOT / "dist" / f"QEAutoGear-{version}.zip"
+    if not zip_path.exists():
+        raise SystemExit(f"{zip_path.name} not in dist/ - run tools/package.py first")
 
     changelog = (ROOT / "CHANGELOG.md")
     notes = changelog.read_text(encoding="utf-8") if changelog.exists() else version

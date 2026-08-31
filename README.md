@@ -47,7 +47,9 @@ through CurseForge because it is not an addon.
 
 ## Install
 
-1. On this page, click the green **Code** button, then **Download ZIP**.
+1. Go to [Releases](https://github.com/Naieter/Zazzers-Autogear/releases/latest)
+   and download **`QEAutoGear-Full-<version>.zip`**. (The other file there is the
+   addon on its own, for people who do not want the helper.)
 2. Unzip it somewhere you will not delete by accident — your Documents folder is
    fine. Not your Downloads folder.
 3. Double-click **`Run QE AutoGear.bat`**.

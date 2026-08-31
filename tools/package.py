@@ -77,6 +77,37 @@ def build() -> Path:
     return out
 
 
+# Everything the launcher needs, and nothing that only matters in the repo.
+FULL_INCLUDE = ["Run QE AutoGear.bat", "Auto-start on or off.bat",
+                "README.md", "CHANGELOG.md", "LICENSE"]
+FULL_TREES = ["addon", "agent", "tools", "docs"]
+FULL_SKIP = {"__pycache__", ".deps-ok", "_selftest"}
+
+
+def build_full() -> Path:
+    """The whole thing: addon, helper, launcher.
+
+    Without this the Releases page handed people an addon with no helper and
+    no way to get one, while the README told them /qeg run does everything.
+    """
+    version, _, _ = read_toc()
+    DIST.mkdir(exist_ok=True)
+    out = DIST / f"QEAutoGear-Full-{version}.zip"
+    root = f"QEAutoGear-Full-{version}"
+
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        for name in FULL_INCLUDE:
+            src = ROOT / name
+            if src.exists():
+                z.write(src, f"{root}/{name}")
+        for tree in FULL_TREES:
+            for src in sorted((ROOT / tree).rglob("*")):
+                rel = src.relative_to(ROOT)
+                if src.is_file() and not any(part in FULL_SKIP for part in rel.parts):
+                    z.write(src, f"{root}/{rel.as_posix()}")
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--check", action="store_true", help="verify only")
@@ -93,13 +124,22 @@ def main() -> int:
     if args.check:
         return 0
 
-    out = build()
-    with zipfile.ZipFile(out) as z:
+    for out in (build(), build_full()):
+        with zipfile.ZipFile(out) as z:
+            names = z.namelist()
+        print()
+        print(f"built {out.relative_to(ROOT)}  "
+              f"({out.stat().st_size:,} bytes, {len(names)} files)")
+
+    # The launcher is the entire point of the full zip; never ship it without.
+    with zipfile.ZipFile(DIST / f"QEAutoGear-Full-{read_toc()[0]}.zip") as z:
         names = z.namelist()
-    size = out.stat().st_size
-    print(f"\nbuilt {out.relative_to(ROOT)}  ({size:,} bytes, {len(names)} files)")
-    for n in names:
-        print(f"    {n}")
+    for required in ("Run QE AutoGear.bat", "agent/qeagent/daemon.py",
+                     "addon/QEAutoGear/Core.lua", "tools/install.py"):
+        if not any(n.endswith(required) for n in names):
+            print(f"  [FAIL] full zip is missing {required}")
+            return 1
+    print("  [ok] full zip has the launcher, helper, addon and installer")
     return 0
 
 

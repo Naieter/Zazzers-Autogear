@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 
-ns.VERSION      = "1.0.3"
+ns.VERSION      = "1.0.4"
 ns.PROTOCOL     = 1
 ns.PAYLOAD_SLOTS = 24
 
