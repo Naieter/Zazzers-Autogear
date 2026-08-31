@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.3
+
+- Gear is now equipped automatically when you run it, instead of showing a list
+  and waiting. Asking for a run means gear me up. **Upgrading turns this on**,
+  including for existing settings; `/qeg autoequip off` restores the old
+  behaviour.
+- Nothing runs on its own unless you also turn on `/qeg autorun`, and gear is
+  still never swapped in combat.
+
 ## 1.0.2
 
 - Fixed a swap being reported as done when it had not happened. The addon now

@@ -25,9 +25,10 @@ calculation.
 
 **Windows only, for now.** The one-click installer is a Windows batch file.
 
-**It will not change your gear without asking.** The first time it finds
-something better it shows you the list and waits. You turn on automatic swapping
-yourself, if you want it.
+**Asking for a run means it equips the result.** `/qeg run` gears you up rather
+than showing you a list to approve. It will not touch your gear on its own
+unless you also turn on `/qeg autorun`, and it never swaps in combat. If you
+would rather see the list first, `/qeg autoequip off`.
 
 ---
 
@@ -73,8 +74,8 @@ In the game:
 
 | Type this | What happens |
 |---|---|
-| `/qeg run` | Works out your best set and shows you what would change |
-| `/qeg equip` | Actually puts that set on |
+| `/qeg run` | Works out your best set and puts it on |
+| `/qeg equip` | Re-applies the last result, if you turned auto-equip off |
 | `/qeg` | Opens a window with the same thing, plus tick boxes |
 | `/qeg diag` | Tells you whether the helper is connected |
 
@@ -93,10 +94,10 @@ rights, and you can delete it by hand if you would rather.
 
 ### Letting it do everything
 
-If you want it to gear you up without being asked:
+`/qeg run` already equips the result. If you want it to notice upgrades by
+itself as well, so you never type anything at all:
 
 ```
-/qeg autoequip on
 /qeg autorun on
 ```
 
@@ -117,8 +118,9 @@ on the character select screen.
 **"QE Live only models healers"** — your spec is not one of the seven above.
 Working as intended.
 
-**It suggests gear you do not want** — nothing is applied until you type
-`/qeg equip`, so you can ignore it.
+**It equipped something you did not want** — whatever came off is in your bags,
+so put it back on. To be shown the list and decide yourself in future, type
+`/qeg autoequip off`.
 
 **Anything else** — open an
 [issue](https://github.com/Naieter/Zazzers-Autogear/issues) and paste what the

@@ -54,8 +54,9 @@ weights you can paste in yourself.
 | `/qeg local` | Find the best set you own using those weights |
 | `/qeg equip` | Put that set on |
 
-Nothing is ever equipped until you ask. Gear is never swapped in combat — it
-waits until you drop out.
+Asking for a run equips the result — nothing happens unless you ask. Gear is
+never swapped in combat; it waits until you drop out. `/qeg autoequip off` if
+you would rather be shown the list and apply it yourself.
 
 ### Want it fully automatic?
 

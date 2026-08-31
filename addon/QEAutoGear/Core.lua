@@ -3,7 +3,7 @@ local Core = {}
 ns.Core = Core
 
 local DEFAULTS = {
-    autoEquip     = false,  -- swap without asking once a result lands
+    autoEquip     = true,   -- asking for a run means "gear me up"; just do it
     autoRun       = false,  -- kick off a run on loot / spec change
     includeBank   = false,
     tierBonus     = 0.05,   -- local scoring only; QE Live models sets properly
@@ -234,6 +234,14 @@ frame:SetScript("OnEvent", function(_, event, arg1)
             if QEAutoGearDB[k] == nil then QEAutoGearDB[k] = v end
         end
         QEAutoGearDB.nextSlot = 1 -- stub loads do not survive a session
+
+        -- Profiles created before 1.0.3 hold an explicit autoEquip = false from
+        -- the old default, which DEFAULTS above cannot override. Flip it once,
+        -- and record that we did so a later "off" is never undone.
+        if (QEAutoGearDB.settingsVersion or 1) < 2 then
+            QEAutoGearDB.autoEquip = true
+            QEAutoGearDB.settingsVersion = 2
+        end
         QEAutoGearCharDB = QEAutoGearCharDB or {}
         QEAutoGearCharDB.weights = QEAutoGearCharDB.weights or {}
         QEAutoGearCharDB.weightSource = QEAutoGearCharDB.weightSource or {}
