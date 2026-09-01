@@ -25,7 +25,7 @@ Either way `/qeg run` is the whole thing.
 **For damage and tank specs, install SimulationCraft.** Get the Windows build
 from [simulationcraft.org](https://www.simulationcraft.org/) and unzip it
 anywhere sensible — `C:\SimulationCraft` is found automatically, or pass
-`--simc "path	o\simc.exe"` to the helper. Without it, those specs are told to
+`--simc "C:/SimulationCraft/simc.exe"` to the helper. Without it, those specs are told to
 install it rather than left waiting.
 
 **Windows only, for now.** The one-click installer is a Windows batch file.
@@ -39,9 +39,10 @@ would rather see the list first, `/qeg autoequip off`.
 
 ## Two ways to run it
 
-**Just the addon** — install from CurseForge like any other addon. You copy your
-gear into QE Live yourself and paste the numbers back (`/qeg export`, then
-`/qeg weights`, then `/qeg local`). Nothing else to install.
+**Just the addon** — install from CurseForge like any other addon. You run the
+numbers yourself (QE Live for healers, Raidbots or simc otherwise) and paste
+them back: `/qeg export`, then `/qeg weights`, then `/qeg local`. Nothing else
+to install.
 
 **Addon plus helper** — the instructions below. `/qeg run` does the whole thing
 by itself in about twelve seconds, and can re-gear you automatically when you
@@ -84,11 +85,22 @@ In the game:
 | `/qeg run` | Works out your best set and puts it on |
 | `/qeg equip` | Re-applies the last result, if you turned auto-equip off |
 | `/qeg` | Opens a window with the same thing, plus tick boxes |
+| `/qeg vault` | Marks your Great Vault rewards BiS / Upgrade / No gain |
 | `/qeg diag` | Tells you whether the helper is connected |
 
 A run takes about 12 seconds. You will see the screen flicker once or twice —
 that is the addon taking a picture of itself, which is genuinely how it gets
 your gear out of the game. Nothing is wrong.
+
+### The Great Vault
+
+Open the vault and each reward is labelled **BiS**, **Upgrade** or **No gain**,
+scored with the same weights the addon gears you with. `/qeg vault` prints the
+same thing to chat.
+
+"BiS" means nothing you own beats it. "Upgrade" means it beats the piece it
+would actually replace — for rings and trinkets that is the weaker of the two
+you are wearing, not whichever slot happens to be first.
 
 ### Starting it for you
 
@@ -122,8 +134,9 @@ turn on auto-start (above).
 fully and start it again, then check `QE AutoGear` is ticked in the AddOns list
 on the character select screen.
 
-**"QE Live only models healers"** — your spec is not one of the seven above.
-Working as intended.
+**"SimulationCraft is not installed"** — you are on a damage or tank spec and
+simc is missing. Install it from
+[simulationcraft.org](https://www.simulationcraft.org/) and restart the helper.
 
 **It equipped something you did not want** — whatever came off is in your bags,
 so put it back on. To be shown the list and decide yourself in future, type
@@ -145,11 +158,12 @@ not know why:
   squares and photographs it, and the helper reads the squares back out. Those
   screenshots are deleted immediately afterwards. Your own screenshots are never
   touched or deleted.
-- **It opens a browser you cannot see**, to load questionablyepic.com and run the
-  numbers exactly as if you had done it by hand.
-- **It sends your gear, spec and talents to that website, and nothing else.** No
-  account details, nothing about other players, and nothing to anywhere except
-  Questionably Epic Live.
+- **On a healer, it opens a browser you cannot see**, to load
+  questionablyepic.com and run the numbers exactly as if you had done it by hand.
+  It sends your gear, spec and talents there and nothing else — no account
+  details, nothing about other players, nowhere but that site.
+- **On any other spec nothing leaves your computer at all.** SimulationCraft
+  runs locally and the addon never contacts Raidbots or anywhere else.
 - **It never types for you or plays the game for you.** It only equips items you
   already own, and never in combat.
 

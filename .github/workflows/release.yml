@@ -41,6 +41,10 @@ jobs:
       - name: SimulationCraft output parsing
         run: python tools/test_simc.py
 
+      # A wrong "BiS" costs someone a weekly vault pick they cannot take back.
+      - name: Great Vault verdicts
+        run: python tools/test_vault.py
+
       - name: Build addon zip
         run: python tools/package.py
 

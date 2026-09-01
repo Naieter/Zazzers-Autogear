@@ -2,7 +2,7 @@
 ## Title: QE AutoGear
 ## Notes: Ships your gear to Questionably Epic Live and equips the winning set. Fully automatic.
 ## Author: Nathan
-## Version: 1.0.5
+## Version: 1.0.6
 ## SavedVariables: QEAutoGearDB
 ## SavedVariablesPerCharacter: QEAutoGearCharDB
 ## IconTexture: Interface\Icons\INV_Chest_Cloth_17
@@ -16,4 +16,5 @@ Optimizer.lua
 Equipper.lua
 Bridge.lua
 UI.lua
+Vault.lua
 Core.lua

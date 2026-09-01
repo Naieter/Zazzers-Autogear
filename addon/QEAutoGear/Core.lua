@@ -89,7 +89,7 @@ function Core:StartJob()
                  .. "run will time out.")
     end
 
-    ns.Print("sending %d items to QE Live (%s)...", (meta.bagItems or 0) + 16, meta.specName or "?")
+    ns.Print("sending %d items to %s (%s)...", (meta.bagItems or 0) + 16, ns.SimSite(specID or 0), meta.specName or "?")
 
     ns.Bridge:Send(text, id, function(frames)
         if not job then return end
@@ -141,7 +141,7 @@ function Core:OnResult(data)
 
     if data.weights and specID then
         ns.Weights:Set(specID, data.weights, data.source or "QE Live")
-        ns.Debug("stored QE Live weights for spec %d", specID)
+        ns.Debug("stored %s weights for spec %d", data.source or "QE Live", specID)
     end
 
     local result
@@ -168,7 +168,7 @@ function Core:OnResult(data)
     ns.Print("answer in %.1fs: %d change(s)%s.", elapsed, #result.changes, gainText)
 
     if #result.changes == 0 then
-        ns.Print("you are already wearing the best set QE Live found.")
+        ns.Print("you are already wearing the best set it found.")
     elseif QEAutoGearDB.autoEquip then
         ns.Equipper:Apply(result, QEAutoGearDB.includeBank)
     else
@@ -347,6 +347,9 @@ SlashCmdList.QEAUTOGEAR = function(msg)
             end
         end
 
+    elseif cmd == "vault" then
+        ns.Vault:Report()
+
     elseif cmd == "diag" then
         local seen = QEAutoGearDB.agentSeen
         ns.Print("agent: %s", seen and ("v" .. (QEAutoGearDB.agentVersion or "?") ..
@@ -371,6 +374,7 @@ SlashCmdList.QEAUTOGEAR = function(msg)
         print("  /qeg autoequip [on|off] - swap without asking")
         print("  /qeg autorun [on|off]   - re-run on loot and spec change")
         print("  /qeg bank [on|off]      - include bank items")
+        print("  /qeg vault      - mark Great Vault rewards as BiS or upgrade")
         print("  /qeg diag       - connection and capacity check")
     end
 end

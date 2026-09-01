@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.6
+
+- **Great Vault rewards are marked BiS, Upgrade or No gain**, using the same
+  stat weights the addon gears you with, so the vault advice and the gear it
+  equips can never disagree. Shown on Blizzard's vault window, and listed by
+  `/qeg vault`.
+- Rings and trinkets are compared against the weaker of the two you are
+  wearing, not against "the ring slot" — otherwise a ring worse than both would
+  be called an upgrade.
+
 ## 1.0.5
 
 - **Damage and tank specs now work.** They sim through SimulationCraft on your
